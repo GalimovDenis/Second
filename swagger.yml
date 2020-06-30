@@ -1,0 +1,130 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger Rest Article
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# Paths supported by the server application
+paths:
+
+  /users:
+    get:
+      operationId: user.read_all
+      tags:
+        - User
+      summary: Read the entire set of users, sorted by user_phone
+      description: Read the entire set of users, sorted by phone numbers
+      responses:
+        200:
+          description: Successfully read users set operation
+          schema:
+            type: array
+            items:
+              properties:
+                user_id:
+                  type: integer
+                  description: Id of the user
+                user_phone:
+                  type: string
+                  description: Phone number of the user
+                ads:
+                  type: array
+                  items:
+                    properties:
+                      ad_owner:
+                        type: integer
+                        description: Id of user this ad is associated with
+                      ad_id:
+                        type: integer
+                        description: Id of this ad
+                      ad_text:
+                        type: string
+                        description: content of this ad
+                      date:
+                        type: string
+                        description: Create/Update date of this ad
+
+  /ads:
+    get:
+      operationId: ads.read_all
+      tags:
+        - Ads
+      summary: Read the entire set of ads for all users, sorted by date
+      description: Read the entire set of ads for all users, sorted by date
+      responses:
+          200:
+            description: Successfully read ads for all users operation
+            schema:
+              type: array
+              items:
+                properties:
+                  ad_id:
+                    type: integer
+                    description: Id of the ad
+                  contentad_text:
+                    type: string
+                    description: Content of the ad
+                  date:
+                    type: string
+                    description: Create/Update date of the ad
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: integer
+                        description: Id of associated user
+                      user_phone:
+                        type: string
+                        description: Phone number of associated user
+
+  /rubrics:
+    get:
+      operationId: rubric.read_all
+      tags:
+        - Rubrics
+      summary: Read the entire set of rubric, sorted by rubric_parent
+      description: Read the entire set of rubric, sorted by rubric_parent
+      responses:
+        200:
+          description: Successfully read rubric set operation
+          schema:
+            type: array
+            items:
+              properties:
+                rubric_id:
+                  type: integer
+                  description: Id of the rubric
+                rubric_name:
+                  type: string
+                  description: Name of the rubric
+                rubric_marks:
+                  type: string
+                  description: different marks for designer
+                rubric_parent:
+                  type: integer
+                  description: parent of the rubric for build relation structure
+                ads:
+                  type: array
+                  items:
+                    properties:
+                      ad_owner:
+                        type: integer
+                        description: Id of user this ad is associated with
+                      ad_id:
+                        type: integer
+                        description: Id of this ad
+                      ad_text:
+                        type: string
+                        description: content of this ad
+                      ad_date:
+                        type: string
+                        description: Create/Update date of this note
+                      ad_frame:
+                        type: boolean
+                        description: The ad in frame or not
