@@ -16,7 +16,7 @@ def read_all():
 
     # Serialize the data for the response
     rubric_schema = RubricSchema(many=True)
-    data = rubric_schema.dump(rubric).data
+    data = rubric_schema.dump(rubric)
     return data
 
 
@@ -40,7 +40,7 @@ def read_one(rubric_id):
 
         # Serialize the data for the response
         rubric_schema = RubricSchema()
-        data = rubric_schema.dump(rubric).data
+        data = rubric_schema.dump(rubric)
         return data
 
     # otherwise, nope, didn't find that rubric

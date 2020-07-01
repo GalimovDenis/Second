@@ -5,15 +5,15 @@ from models import Ad, AdSchema, User, Rubric
 
 def read_all():
     """
-    This function respons to a request from /api/user/ads
+    This function responds to a request from /api/user/ads
     with the complete list of ads, sorted by ad date
 
     :return:       json list of all Ad for all users
     """
     ads = Ad.query.order_by(db.desc(Ad.ad_date)).all()
 
-    ad_schema = AdSchema(many=True, exclude=["user.ads"])
-    data = ad_schema.dump(ads).data
+    ad_schema = AdSchema(many=True)
+    data = ad_schema.dump(ads)
     return data
 
 

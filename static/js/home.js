@@ -30,7 +30,7 @@ class Model {
  */
 class View {
     constructor() {
-        this.table = document.querySelector(".blog table");
+        this.table = document.querySelector(".ads table");
         this.error = document.querySelector(".error");
     }
 
@@ -42,7 +42,7 @@ class View {
         ads.forEach((ad) => {
             html += `
             <tr data-person_id="${ad.user.user_id}" data-note_id="${ad.ad_id}">
-                <td class="timestamp">${ad.date}</td>
+                <td class="timestamp">${ad.ad_date}</td>
                 <td class="name">${ad.user.user_phone}</td>
                 <td class="content">${ad.ad_text}</td>
             </tr>`;

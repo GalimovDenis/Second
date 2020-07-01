@@ -13,7 +13,7 @@ basePath: /api
 # Paths supported by the server application
 paths:
 
-  /users:
+  /user:
     get:
       operationId: user.read_all
       tags:

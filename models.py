@@ -10,6 +10,15 @@ class Rubric(db.Model):
     rubric_marks = db.Column(db.String(10))
     rubric_parent = db.Column(db.Integer, db.ForeignKey("rubric.rubric_id"))
 
+    ads = db.relationship(
+        "Ad",
+        backref="rubric",
+        cascade="all, delete, delete-orphan",
+        single_parent=True,
+        order_by="desc(Ad.ad_date)"
+
+    )
+
 
 class User(db.Model):
     __tablename__ = "user"
@@ -37,77 +46,30 @@ class Ad(db.Model):
     )
 
 
-class AdSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+class AdSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Ad
-        sqla_session = db.session
+        load_instance = True
 
-    user = fields.Nested("AdUserSchema", default=None)
-    rubric = fields.Nested("AdRubricSchema", default=None)
-
-
-class AdRubricSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
-    rubric_id = fields.Int()
-    rubric_name = fields.Str()
-    rubric_marks = fields.Bool()
-    rubric_parent = fields.Int()
+    user = fields.Nested(lambda: UserSchema(exclude=("ads",)), default=None)
+    rubric = fields.Nested(lambda: RubricSchema(exclude=("ads",)), default=None)
 
 
-class AdUserSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
-    user_id = fields.Int()
-    user_phone = fields.Str()
-
-
-class UserSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+class UserSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = User
-        sqla_session = db.session
+        load_instance = True
 
-    ads = fields.Nested("UserAdSchema", default=[], many=True)
-
-
-class UserAdSchema(ma.ModelSchema):
-    def __init_subclass__(cls, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
-    ad_id = fields.Int()
-    ad_text = fields.Str()
-    ad_rubric = fields.Int()
-    ad_frame = fields.Bool()
-    ad_owner = fields.Int()
-    ad_date = fields.Str()
+    ads = fields.Nested(AdSchema, default=[], many=True)
 
 
-class RubricSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+class RubricSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Rubric
-        sqla_session = db.session
+        load_schema = True
 
-    ads = fields.Nested("RubricAdSchema", default=[], many=True)
+    ads = fields.Nested(AdSchema, default=[], many=True)
 
-
-class RubricAdSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
-    ad_id = fields.Int()
-    ad_text = fields.Str()
-    ad_rubric = fields.Int()
-    ad_frame = fields.Bool()
-    ad_owner = fields.Int()
-    ad_date = fields.Str()

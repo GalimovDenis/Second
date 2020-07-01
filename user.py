@@ -15,7 +15,7 @@ def read_all():
 
     # Serialize the data  for the response
     user_schema = UserSchema(many=True)
-    data = user_schema.dump(users).data
+    data = user_schema.dump(users)
     return data
 
 
@@ -40,7 +40,7 @@ def read_one(user_id):
 
         # Serialize the data for the response
         user_schema = UserSchema()
-        data = user_schema.dump(user).data
+        data = user_schema.dump(user)
         return data
 
     # otherwise, nope, didn't find that user
