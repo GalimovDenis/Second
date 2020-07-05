@@ -16,7 +16,9 @@ def read_all():
 
     # Serialize the data for the response
     rubric_schema = RubricSchema(many=True)
+
     data = rubric_schema.dump(rubric)
+
     return data
 
 
@@ -31,8 +33,8 @@ def read_one(rubric_id):
     # Build the initial query
     rubric = (
         Rubric.query.filter(Rubric.rubric_id == rubric_id)
-        .outerjoin(Ad)
-        .one_or_none()
+            .outerjoin(Ad)
+            .one_or_none()
     )
 
     # Did we find a rubric?

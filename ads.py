@@ -10,7 +10,7 @@ def read_all():
 
     :return:       json list of all Ad for all users
     """
-    ads = Ad.query.order_by(db.desc(Ad.ad_date)).all()
+    ads = Ad.query.order_by(db.desc(Ad.ad_timestamp)).all()
 
     ad_schema = AdSchema(many=True)
     data = ad_schema.dump(ads)
