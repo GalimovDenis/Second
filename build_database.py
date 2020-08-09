@@ -1,6 +1,7 @@
 import os
+
 from config import db
-from models import Rubric, Ad, User
+from tolkuchka.models import Rubric, Ad, Doer
 
 RUBRIC = [
     {"rubric_id": "1", "rubric_name": "ОБМЕН", "rubric_marks": "", "rubric_parent": "0"},
@@ -936,7 +937,7 @@ for rubric in RUBRIC:
 db.session.commit()
 
 for user in USERS:
-    u = User(
+    u = Doer(
         user_id=user.get("user_id"),
         user_phone=user.get("user_phone")
     )

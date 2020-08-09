@@ -1,0 +1,274 @@
+openapi: 3.0.0
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: OpenApi Rest Article
+
+# Paths supported by the server application
+paths:
+
+  /doers:
+    get:
+      operationId: doer.read_all
+      tags:
+        - Doer
+      summary: Read the entire set of doers, sorted by doer_phone
+      description: Read the entire set of doers, sorted by phone numbers
+      parameters:
+        - name: doer_phone
+          in: query
+          schema:
+            type: string
+            pattern: '^[0-9+-]*$'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 100
+      responses:
+        '200':
+          description: Successfully read doers set operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Doer'
+
+  /doer/{doer_id}:
+    get:
+      operationId: doer.read_one
+      tags:
+        - doer
+      summary: Show all doer's ads
+      description: Show all the doer's ads
+      parameters:
+        - $ref: '#/components/parameters/smt_id'
+      responses:
+        '200':
+          description: Successfully read doer from doer data operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doer'
+        '404':
+          description: Doer does not exist
+    put:
+      operationId: doer.create
+      tags:
+        - doer
+      summary: Create or update the doer and store his to the db
+      description: Create or updatethe doer and store his to the db
+      parameters:
+        - $ref: '#/components/parameters/doer'
+      responses:
+        '200':
+          description: The doer updated
+        '201':
+          description: The doer successfuly added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Doer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-body-name: doer
+      security:
+        - jwt: ['doer']
+
+
+  /ads:
+    get:
+      operationId: ads.read_all
+      tags:
+        - Ads
+      summary: Read the entire set of ads for all doers, sorted by date
+      description: Read the entire set of ads for all doers, sorted by date
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: issues
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+          '200':
+            description: Successfully read ads for all doers operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Ad'
+
+
+  /ad/{ad_id}:
+    get:
+      operationId: ads.read_one
+      tags:
+        - Ad
+      summary: Read the ad
+      parameters:
+        - $ref: '#/components/parameters/smt_id'
+      responses:
+        '200':
+          description: The ad successfully read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ad'
+        '404':
+          description: The ad not found
+    put:
+      operationId: ads.create
+      tags:
+        - ad
+      summary: Create the ad and store his in the db
+      parameters:
+        - $ref: '#/components/schemas/ad'
+      responses:
+        '200':
+          description: The ad updated
+        '201':
+          description: THe ad successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ad'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-body-name: ad
+      security:
+        - jwt: ['ad']
+
+
+  /rubrics:
+    get:
+      operationId: rubric.read_all
+      tags:
+        - Rubrics
+      summary: Read the entire set of rubric, sorted by rubric_parent
+      description: Read the entire set of rubric, sorted by rubric_parent
+      responses:
+        '200':
+          description: Successfully read rubric set operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rubric'
+
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: user.decode_token
+  parameters:
+    smt_id:
+      name: smt_id
+      in: path
+      description: Id of the smt to get
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    doer:
+      name: doer
+      in: body
+      description: doer to create
+      required: True
+      schema:
+        $ref: '#/components/schemas/Doer'
+    ad:
+      name: ad
+      in: body
+      description: ad to create
+      required: true
+      schema:
+        $ref: '#/components/schemas/Ad'
+  schemas:
+    Ad:
+      type: object
+      required:
+        - ad_text
+      properties:
+        ad_id:
+          type: integer
+          description: Id of this ad
+          example: 15
+          readOnly: true
+        ad_text:
+          type: string
+          description: content of this ad
+          example: '1,5=2=3. 2-к. мгб. 38 кв.м по ул. Емлина, 2, высокий 1 этаж, пл. окна, сейф-дверь, косметический ремонт на 2-, 3-к., с нашей доплатой.'
+        ad_rubric:
+          type: integer
+          description: Id of rubric this ad is associated with
+          example: 4
+        ad_frame:
+          type: integer
+          description: The flag ad may be printed in frame
+          example: 1
+        ad_owner:
+          type: integer
+          description: Id of doer this ad is associated with
+          example: 134
+        ad_timestamp:
+          type: string
+          description: Create/Update date of this ad
+    Doer:
+      type: object
+      required:
+        - doer_phone
+      properties:
+        doer_id:
+          type: integer
+          description: Id of the doer
+          example: 1
+          readOnly: true
+        doer_phone:
+          type: string
+          description: Phone number of the doer
+          example: '89222256553'
+          readOnly: false
+        doer_name:
+          type: string
+          description: Name of the doer
+          example: 'Галина'
+          readOnly: false
+    Rubric:
+      type: object
+      required:
+        - rubric_name
+      properties:
+        rubric_id:
+          type: integer
+          description: Id of the rubric
+          example: 4
+          readOnly: true
+        rubric_name:
+          type: string
+          description: Name of rubric for Ads
+          example: '1-комнатные'
+        rubric_marks:
+          type: string
+          description: Different flags for printing
+          example: '~#'
+        rubric_parent:
+          type:  integer
+          description: The parent of rubric for building rubrics tree
+          example: 1

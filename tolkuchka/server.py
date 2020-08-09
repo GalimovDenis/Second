@@ -1,9 +1,10 @@
 from flask import render_template
+
 import config
 
 connex_app = config.connex_app
 
-connex_app.add_api("swagger.yml")
+connex_app.add_api("openapi.yaml")
 
 
 @connex_app.route("/")

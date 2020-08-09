@@ -1,6 +1,8 @@
 from datetime import datetime
-from config import db, ma
+
 from marshmallow import fields
+
+from config import db, ma
 
 
 class Rubric(db.Model):
@@ -11,10 +13,10 @@ class Rubric(db.Model):
     rubric_parent = db.Column(db.Integer)
 
 
-class User(db.Model):
-    __tablename__ = "user"
-    user_id = db.Column(db.Integer, primary_key=True)
-    user_phone = db.Column(db.String(50))
+class Doer(db.Model):
+    __tablename__ = "doer"
+    doer_id = db.Column(db.Integer, primary_key=True)
+    doer_phone = db.Column(db.String(50))
 
     ads = db.relationship(
         "Ad",
@@ -31,13 +33,22 @@ class Ad(db.Model):
     ad_text = db.Column(db.String(512), nullable=False)
     ad_rubric = db.Column(db.Integer)
     ad_frame = db.Column(db.Integer, default=0)
-    ad_owner = db.Column(db.Integer, db.ForeignKey("user.user_id"))
+    ad_owner = db.Column(db.Integer, db.ForeignKey("doer.doer_id"))
+    ad_issuer = db.Column(db.Integer, db.ForeignKey("user.user_id"))
     ad_timestamp = db.Column(
         db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow()
     )
 
 
-class RubricAdUserSchema(ma.SQLAlchemyAutoSchema):
+class User(db.Model):
+    __tablename__ = "user"
+    user_id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(20))
+    user_mail = db.Column(db.String(30), unique=True)
+    user_hash = db.Column(db.String)
+
+
+class RubricAdDoerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Rubric
         load_instance = True
@@ -50,12 +61,12 @@ class AdSchema(ma.SQLAlchemyAutoSchema):
         model = Ad
         load_instance = True
 
-    user = fields.Nested(lambda: UserSchema(exclude=("ads",)), default=None)
+    user = fields.Nested(lambda: DoerSchema(exclude=("ads",)), default=None)
 
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
+class DoerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = User
+        model = Doer
         load_instance = True
 
     ads = fields.Nested(AdSchema, default=[], many=True)
