@@ -20,7 +20,7 @@ class Doer(db.Model):
 
     ads = db.relationship(
         "Ad",
-        backref="user",
+        backref="doer",
         cascade="all, delete, delete-orphan",
         single_parent=True,
         order_by="desc(Ad.ad_timestamp)",
@@ -61,7 +61,7 @@ class AdSchema(ma.SQLAlchemyAutoSchema):
         model = Ad
         load_instance = True
 
-    user = fields.Nested(lambda: DoerSchema(exclude=("ads",)), default=None)
+    doer = fields.Nested(lambda: DoerSchema(exclude=("ads",)), default=None)
 
 
 class DoerSchema(ma.SQLAlchemyAutoSchema):

@@ -36,7 +36,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Doer'
 
-  /doer/{doer_id}:
+  '/doer/{doer_id}':
     get:
       operationId: doer.read_one
       tags:
@@ -44,7 +44,7 @@ paths:
       summary: Show all doer's ads
       description: Show all the doer's ads
       parameters:
-        - $ref: '#/components/parameters/smt_id'
+        - $ref: '#/components/parameters/doer_id'
       responses:
         '200':
           description: Successfully read doer from doer data operation
@@ -61,7 +61,7 @@ paths:
       summary: Create or update the doer and store his to the db
       description: Create or updatethe doer and store his to the db
       parameters:
-        - $ref: '#/components/parameters/doer'
+        - $ref: '#/components/parameters/doer_id'
       responses:
         '200':
           description: The doer updated
@@ -108,7 +108,6 @@ paths:
                   items:
                     $ref: '#/components/schemas/Ad'
 
-
   /ad/{ad_id}:
     get:
       operationId: ads.read_one
@@ -116,7 +115,7 @@ paths:
         - Ad
       summary: Read the ad
       parameters:
-        - $ref: '#/components/parameters/smt_id'
+        - $ref: '#/components/parameters/ad_id'
       responses:
         '200':
           description: The ad successfully read
@@ -132,7 +131,7 @@ paths:
         - ad
       summary: Create the ad and store his in the db
       parameters:
-        - $ref: '#/components/schemas/ad'
+        - $ref: '#/components/parameters/ad_id'
       responses:
         '200':
           description: The ad updated
@@ -178,8 +177,16 @@ components:
       bearerFormat: JWT
       x-bearerInfoFunc: user.decode_token
   parameters:
-    smt_id:
-      name: smt_id
+    doer_id:
+      name: doer_id
+      in: path
+      description: Id of the smt to get
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    ad_id:
+      name: ad_id
       in: path
       description: Id of the smt to get
       required: true

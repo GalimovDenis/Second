@@ -936,10 +936,10 @@ for rubric in RUBRIC:
 
 db.session.commit()
 
-for user in USERS:
+for doer in USERS:
     u = Doer(
-        user_id=user.get("user_id"),
-        user_phone=user.get("user_phone")
+        doer_id=doer.get("user_id"),
+        doer_phone=doer.get("user_phone")
     )
     db.session.add(u)
 

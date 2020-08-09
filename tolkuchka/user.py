@@ -1,7 +1,7 @@
 import time
 
 import six
-from jwt import jwt, PyJWTError
+from jose import jwt, JWTError
 from werkzeug.exceptions import Unauthorized
 
 JWT_ISSUER = 'com.tolkuchka.app'
@@ -11,11 +11,11 @@ JWT_ALGORITHM = 'HS256'
 
 
 def generate_token(user_id):
-    '''
+    """
     Generate token
     :param user_id:
     :return:
-    '''
+    """
     timestamp = _current_timestamp()
     payload = {
         "iss": JWT_ISSUER,
@@ -23,13 +23,13 @@ def generate_token(user_id):
         "exp": int(timestamp + JWT_LIFETIME_SECONDS),
         "sub": str(user_id)
     }
-    return jwt.encode(payload, JWT_SECRET, algorythm=JWT_ALGORITHM)
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
 def decode_token(token):
     try:
-        return jwt.decode(token, JWT_SECRET, algorythms=[JWT_ALGORITHM])
-    except PyJWTError as e:
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except JWTError as e:
         six.raise_from(Unauthorized, e)
 
 

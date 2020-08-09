@@ -18,7 +18,7 @@ class Model {
             }
         };
         // call the REST endpoint and wait for data
-        let response = await fetch("/api/ads", options);
+        let response = await fetch("/ads", options);
         let data = await response.json();
         return data;
     }
@@ -41,9 +41,9 @@ class View {
         // Iterate over the ads and build the table
         ads.forEach((ad) => {
             html += `
-            <tr data-person_id="${ad.user.user_id}" data-note_id="${ad.ad_id}">
+            <tr data-person_id="${ad.doer.doer_id}" data-note_id="${ad.ad_id}">
                 <td class="timestamp">${ad.ad_date}</td>
-                <td class="name">${ad.user.user_phone}</td>
+                <td class="name">${ad.doer.doer_phone}</td>
                 <td class="content">${ad.ad_text}</td>
             </tr>`;
         });
@@ -90,7 +90,7 @@ class Controller {
             if (target.classList.contains("name")) {
                 let person_id = parent.getAttribute("data-person_id");
 
-                window.location = `/user/${user_id}`;
+                window.location = `/doer/${(this.doer_id)}`;
 
             // is this the content td
             } else if (target.classList.contains("content")) {

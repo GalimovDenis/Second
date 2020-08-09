@@ -6,9 +6,9 @@ from flask_sqlalchemy import SQLAlchemy
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-connex_app = connexion.App(__name__, specification_dir=basedir)
+connexian_app = connexion.App(__name__, specification_dir=basedir)
 
-app = connex_app.app
+app = connexian_app.app
 
 sqlite_url = "sqlite:////" + os.path.join(basedir, "Second.db")
 

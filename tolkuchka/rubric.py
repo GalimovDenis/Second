@@ -36,6 +36,7 @@ def read_one(rubric_id):
         Rubric.query.filter(Rubric.rubric_id == rubric_id)
             .outerjoin(Ad)
             .one_or_none()
+
     )
 
     # Did we find a rubric?
@@ -128,7 +129,7 @@ def update(rubric_id, rubric):
 
 def delete(rubric_id):
     """
-    This function deletes a rubric from the rubric sstructure
+    This function deletes a rubric from the rubric structure
 
     :param rubric_id:   Id of the rubric to delete
     :return:            200 on successful delete, 404 if not found
