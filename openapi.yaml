@@ -9,7 +9,7 @@ paths:
 
   /doers:
     get:
-      operationId: doer.read_all
+      operationId: ad_doers.read_all
       tags:
         - Doer
       summary: Read the entire set of doers, sorted by doer_phone
@@ -38,16 +38,16 @@ paths:
 
   '/doer/{doer_id}':
     get:
-      operationId: doer.read_one
+      operationId: ad_doers.read_one
       tags:
-        - doer
-      summary: Show all doer's ads
-      description: Show all the doer's ads
+        - Doer
+      summary: Show all ad_doers's ad_doers
+      description: Show all the ad_doers's ad_doers
       parameters:
         - $ref: '#/components/parameters/doer_id'
       responses:
         '200':
-          description: Successfully read doer from doer data operation
+          description: Successfully read ad_doers from ad_doers data operation
           content:
             application/json:
               schema:
@@ -55,18 +55,18 @@ paths:
         '404':
           description: Doer does not exist
     put:
-      operationId: doer.create
+      operationId: ad_doers.create
       tags:
-        - doer
-      summary: Create or update the doer and store his to the db
-      description: Create or updatethe doer and store his to the db
+        - Doer
+      summary: Create or update the ad_doers and store his to the db
+      description: Create or updatethe ad_doers and store his to the db
       parameters:
         - $ref: '#/components/parameters/doer_id'
       responses:
         '200':
-          description: The doer updated
+          description: The ad_doers updated
         '201':
-          description: The doer successfuly added
+          description: The ad_doers successfuly added
           content:
             application/json:
               schema:
@@ -76,18 +76,16 @@ paths:
           application/json:
             schema:
               type: object
-              x-body-name: doer
-      security:
-        - jwt: ['doer']
+              x-body-name: ad_doers
 
 
   /ads:
     get:
-      operationId: ads.read_all
+      operationId: ad_doers.read_all
       tags:
-        - Ads
-      summary: Read the entire set of ads for all doers, sorted by date
-      description: Read the entire set of ads for all doers, sorted by date
+        - Ad
+      summary: Read the entire set of ad_doers for all doers, sorted by date
+      description: Read the entire set of ad_doers for all doers, sorted by date
       parameters:
         - name: limit
           in: query
@@ -100,7 +98,7 @@ paths:
             minimum: 0
       responses:
           '200':
-            description: Successfully read ads for all doers operation
+            description: Successfully read ad_doers for all doers operation
             content:
               application/json:
                 schema:
@@ -110,7 +108,7 @@ paths:
 
   /ad/{ad_id}:
     get:
-      operationId: ads.read_one
+      operationId: ad_doers.read_one
       tags:
         - Ad
       summary: Read the ad
@@ -125,10 +123,11 @@ paths:
                 $ref: '#/components/schemas/Ad'
         '404':
           description: The ad not found
+
     put:
-      operationId: ads.create
+      operationId: ad_doers.create
       tags:
-        - ad
+        - Ad
       summary: Create the ad and store his in the db
       parameters:
         - $ref: '#/components/parameters/ad_id'
@@ -147,15 +146,13 @@ paths:
             schema:
               type: object
               x-body-name: ad
-      security:
-        - jwt: ['ad']
 
 
   /rubrics:
     get:
       operationId: rubric.read_all
       tags:
-        - Rubrics
+        - Rubric
       summary: Read the entire set of rubric, sorted by rubric_parent
       description: Read the entire set of rubric, sorted by rubric_parent
       responses:
@@ -168,15 +165,55 @@ paths:
                 items:
                   $ref: '#/components/schemas/Rubric'
 
+  /login:
+    post:
+      operationId: user.login
+      tags:
+        - Security
+      parameters:
+        - $ref: '#/components/parameters/username'
+        - $ref: '#/components/parameters/password'
+        - $ref: '#/components/parameters/csrf'
+      responses:
+        '200':
+          description: form showed
+        '404':
+          description: not found
+
+  /logout:
+    get:
+      operationId: user.logout
+      tags:
+        - Security
+      responses:
+        '200':
+          description: User successfully logged out
+        '404':
+          description: Function not found
 
 components:
-  securitySchemes:
-    jwt:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      x-bearerInfoFunc: user.decode_token
   parameters:
+    username:
+      name: username
+      required: true
+      in: body
+      schema:
+        type: string
+        maxLength: 20
+    password:
+      name: password
+      required: true
+      in: body
+      schema:
+        type: string
+        format: password
+        maxLength: 20
+    csrf:
+      name: scrf
+      required: true
+      in: body
+      schema:
+        type: string
     doer_id:
       name: doer_id
       in: path
@@ -194,9 +231,9 @@ components:
         type: integer
         minimum: 1
     doer:
-      name: doer
+      name: ad_doers
       in: body
-      description: doer to create
+      description: ad_doers to create
       required: True
       schema:
         $ref: '#/components/schemas/Doer'
@@ -207,6 +244,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Ad'
+
   schemas:
     Ad:
       type: object
@@ -230,9 +268,9 @@ components:
           type: integer
           description: The flag ad may be printed in frame
           example: 1
-        ad_owner:
+        ad_doer:
           type: integer
-          description: Id of doer this ad is associated with
+          description: Id of ad_doers this ad is associated with
           example: 134
         ad_timestamp:
           type: string
@@ -244,17 +282,17 @@ components:
       properties:
         doer_id:
           type: integer
-          description: Id of the doer
+          description: Id of the ad_doers
           example: 1
           readOnly: true
         doer_phone:
           type: string
-          description: Phone number of the doer
-          example: '89222256553'
+          description: Phone number of the ad_doers
+          example: '8-922-225-65-53'
           readOnly: false
         doer_name:
           type: string
-          description: Name of the doer
+          description: Name of the ad_doers
           example: 'Галина'
           readOnly: false
     Rubric:
@@ -264,7 +302,7 @@ components:
       properties:
         rubric_id:
           type: integer
-          description: Id of the rubric
+          description: Id of the Rubric
           example: 4
           readOnly: true
         rubric_name:

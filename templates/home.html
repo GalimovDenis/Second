@@ -2,29 +2,36 @@
 {% block title %}Толкучка - прием объявлений{% endblock %}
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/home.css">
-{% endblock %}
-
-{% block page_name %}Толкучка прием объявлений{% endblock %}
-
-{% block rubrics %}
-
+    <link rel="stylesheet" href="{{url_for('static',filename='css/home.css', v=1)}}">
 {% endblock %}
 
 {% block body %}
+<div class="navigation">
+    <span class="buttons">
+        <a href="/logout">Выход</a>
+        <!--<a href="/user">Развернуть</a>-->
+    </span>
+    <span class="page_name">
+        <div>{% block page_name%}{% endblock %}</div>
+    </span>
+    <span class="spacer"></span>
+</div>
 <div class="container">
+    <div class="rubrics">
+    </div>
     <div class="ads">
         <table>
-            <caption>Объявления</caption>
             <thead>
                 <tr>
-                    <th>Creation/Update Timestamp</th>
-                    <th>Person</th>
-                    <th>Note</th>
+                    <th>Дата/время</th>
+                    <th>Клиент</th>
+                    <th>Объявление</th>
                 </tr>
             </thead>
         </table>
     </div>
+</div>
+<div class="editor">
 </div>
 <div class="error hidden"></div>
 
@@ -34,7 +41,7 @@
 {{ super() }}
 <script type="module">
     // Give the imported MVC components a namespace
-    import MVC from "/static/js/home.js";
+    import MVC from '/static/js/home.js'
 
     // Create an intentional global variable referencing the import
     window.mvc = MVC;

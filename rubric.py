@@ -1,19 +1,21 @@
 from flask import make_response, abort
+from flask_login import login_required
 
 from config import db
-from tolkuchka.models import Rubric, RubricSchema, Ad
+from models import Rubric, RubricSchema, Ad
 
 
+@login_required
 def read_all():
     """
-    This function responds to a request for /api/rubric
+    This function responds to a request for /rubrics
     with the complete lists of rubric
 
     :return:    json string of tree of rubric
     """
 
-    # Create the list of rubrics from our data
-    rubric = Rubric.query.order_by(Rubric.rubric_parent).all()
+    # Create the ONE big object rubric from our data, we need just ONE.
+    rubric = Rubric.query.filter(Rubric.rubric_id == 1).all()
 
     # Serialize the data for the response
     rubric_schema = RubricSchema(many=True)
@@ -23,9 +25,10 @@ def read_all():
     return data
 
 
+@login_required
 def read_one(rubric_id):
     """
-    This function responds to a request for /api/rubric/{rubric_id}
+    This function responds to a request for /rubric/{rubric_id}
     with one matching rubric from rubrics
 
     :param rubric_id:   Id of the rubric to find
@@ -52,6 +55,7 @@ def read_one(rubric_id):
         abort(404, f"Rubric not found for Id: {rubric_id}")
 
 
+@login_required
 def create(rubric):
     """
     This function creates a new rubric in the rubrics structure
@@ -90,6 +94,7 @@ def create(rubric):
         abort(409, f"Rubric {rubric_name} in {rubric_parent} exists already")
 
 
+@login_required
 def update(rubric_id, rubric):
     """
     This function updates an existing rubric in the rubric structure
@@ -127,6 +132,7 @@ def update(rubric_id, rubric):
         abort(404, f"Rubric not found for Id: {rubric_id}")
 
 
+@login_required
 def delete(rubric_id):
     """
     This function deletes a rubric from the rubric structure
@@ -140,7 +146,7 @@ def delete(rubric_id):
 
     # Did we find a rubric?
     if rubric is not None:
-        db.session.delete(rubric)
+        db.session.delete()
         db.session.commit()
         return make_response(f"Rubric {rubric_id} deleted", 200)
 

@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/Second.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="MySQL - tolkuchka@172.17.0.2" uuid="65dca232-4c40-4707-90d0-6d58083b3901">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://172.17.0.2:3306/</jdbc-url>
+    </data-source>
   </component>
 </project>
