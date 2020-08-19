@@ -1,69 +1,52 @@
-from marshmallow import fields
+from marshmallow import fields, pre_load
 from sqlalchemy import text
-from sqlalchemy.orm import relationship
 
 from config import db, ma
-
 
 # marshmallow.exceptions.ValidationError:
 #   {'rub_ads': {0: {'ad_doers': {0: {'doer_phone': ['Unknown field.'], 'doer_name': ['Unknown field.']}}},...
 # in case [Doer] <- [association] -> [Ad]
+# error deserialization objects with relationship 'many-to-many'
 # https://github.com/marshmallow-code/marshmallow/issues/1579
 
 #   Implementation of
 #
-#  / [Doer] >-(@property)-> [AssocDoerToAd] --> [Ad] \  -> [Rubric] <-> [Rubric] (Recursion)
-# <                                                   >
-#  \ [Doer] <-- [AssocAdToDoer] <-(@property)-< [Ad] /  -> [User]
-#
+# [Doer] <-- assoc_ad_doer --> [Ad]  --> [Rubric] <-> [Rubric] (Recursion)
+#                                |
+#                                V
+#                              [User]
 
 
-class AssocDoerToAd(db.Model):
-    __tablename__ = 'assoc_doer_to_ad'
-    ad_id = db.Column(db.Integer, primary_key=True)
-    doer_id = db.Column(db.Integer, db.ForeignKey('doer.doer_id'))
-
-
-class AssocAdToDoer(db.Model):
-    __tablename__ = 'assoc_ad_to_doer'
-    ad_id = db.Column(db.Integer, db.ForeignKey('ad.ad_id'))
-    doer_id = db.Column(db.Integer, primary_key=True)
+assoc_ad_doer = db.Table('assoc_ad_doer', db.metadata,
+                         db.Column('ad_id', db.Integer, db.ForeignKey('ad.ad_id')),
+                         db.Column('doer_phone', db.Integer, db.ForeignKey('doer.doer_phone'))
+                         )
 
 
 class Doer(db.Model):
     __tablename__ = "doer"
-    doer_id = db.Column(db.Integer, primary_key=True)
-    doer_phone = db.Column(db.String(50), unique=True)
+    doer_phone = db.Column(db.String(50), primary_key=True)
     doer_name = db.Column(db.String(50))
 
-    @property
-    def assoc_to_ad(self):
-        return db.object_session(self).query(AssocDoerToAd)\
-            .with_parent(self)\
-            .filter(AssocDoerToAd.doer_id == self.doer_id).all()
-
-    ads = db.relationship("AssocDoerToAd")
+#    ads = db.relationship("Ad", secondary=assoc_ad_doer)
 
 
 class Ad(db.Model):
     __tablename__ = "ad"
     ad_id = db.Column(db.Integer, primary_key=True)
     ad_text = db.Column(db.String(512), nullable=False)
-    ad_rubric = db.Column(db.Integer, db.ForeignKey("rubric.rubric_id"))
+    ad_rubric_id = db.Column(db.Integer, db.ForeignKey("rubric.rubric_id"))
     ad_frame = db.Column(db.String(10))
     ad_issue = db.Column(db.Integer, default=4)
     ad_comment = db.Column(db.String(512))
-    ad_issuer = db.Column(db.String(20), db.ForeignKey("user.username"))    # , default=current_user.username)
+    ad_issuer = db.Column(db.String(20), db.ForeignKey("user.username"))  # , default=current_user.username)
     ad_update = db.Column(
         db.DateTime,
         server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
     )
 
-    @property
-    def assoc_to_doer(self):
-        return db.object_session(self).query(Ad).with_parent(self).filter().all()
-
-    ad_doers = db.relationship("AssocAdToDoer")
+    # ad_rubric = db.relationship("Rubric")
+    ad_doers = db.relationship("Doer", secondary=assoc_ad_doer)
 
 
 class Rubric(db.Model):
@@ -71,8 +54,10 @@ class Rubric(db.Model):
     rubric_id = db.Column(db.Integer, primary_key=True)
     rubric_name = db.Column(db.String(32))
     rubric_marks = db.Column(db.String(10))
-    rubric_parent = db.Column(db.Integer, db.ForeignKey("rubric.rubric_id"))
-    children = relationship("Rubric")
+    rubric_parent_id = db.Column(db.Integer, db.ForeignKey("rubric.rubric_id"), default=0)
+    rubric_parent = db.relationship("Rubric")
+
+    rub_ads = db.relationship("Ad")
 
 
 class User(db.Model):
@@ -104,10 +89,21 @@ class RubricAdDoerSchema(ma.SQLAlchemyAutoSchema):
         model = Rubric
         load_instance = True
 
-    rub_ads = fields.List(fields.Nested(lambda: AdDoerSchema()))
+    rub_ads = fields.List(fields.Nested(lambda: AdSchema()))
+
+    @pre_load
+    def get_exist_id(self, in_data, **kwargs):
+        if hasattr(in_data, 'rubric_parent_id'):
+            get_id = db.session.query(Rubric)\
+                .filter(Rubric.rubric_parent_id == in_data["rubric_parent_id"])\
+                .filter(Rubric.rubric_name == in_data["rubric_name"])\
+                .one_or_none()
+            if get_id:
+                in_data["rubric_id"] = get_id.rubric_id
+        return in_data
 
 
-class AdDoerSchema(ma.SQLAlchemyAutoSchema):
+class AdSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Ad
         partial = True
@@ -115,37 +111,24 @@ class AdDoerSchema(ma.SQLAlchemyAutoSchema):
         dateformat = '%d.%m.%Y'
         datetimeformat = '%d.%m.%Y %H:%M'
 
-    ad_doers = fields.Nested(lambda: AssocAdToDoerSchema(), default=None)
+    ad_doers = fields.List(fields.Nested(lambda: DoerSchema(), default=None))
+
+    @pre_load
+    def get_rubric_id(self, in_data, **kwargs):
+        id = in_data
+        return id
 
 
-class AssocAdToDoerSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = AssocAdToDoer
-        load_instance = True
-
-    ad_doers = fields.List(fields.Nested(lambda: DoerAdSchema(exclude=("ads",)), default=None))
-
-
-class DoerAdSchema(ma.SQLAlchemyAutoSchema):
+class DoerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Doer
         load_instance = True
 
-    ads = fields.Nested(lambda: AdDoerSchema(exclude=("ad_doers",)), default=None)
+    ads = fields.List(fields.Nested(lambda: AdSchema(exclude=("ad_doers",)), default=None))
 
-
-class RubricSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Rubric
-        load_schema = True
-
-    rub_ads = fields.List(fields.Nested(lambda: RubricSchema()))
-
-
-# @event.listens_for(Doer, 'before_insert')
-# def check_doers_dublicate(mapper, connection, target):
-#     get_existing_doer = Doer.query.filter(Doer.doer_phone == target.doer_phone).one_or_none()
-#     if get_existing_doer:
-#         target.doer_id = get_existing_doer.doer_id
-#
-#         print(1)
+    @pre_load
+    def get_exist_id(self, in_data, **kwargs):
+        get_id = db.session.query(Doer).filter(Doer.doer_phone == in_data["doer_phone"]).one_or_none()
+        if get_id:
+            in_data["doer_id"] = get_id.doer_id
+        return in_data

@@ -76,7 +76,7 @@ def create(doer):
         new_doer = schema.load(doer, session=db.session).data
 
         # Add the user to the database
-        db.session.add(new_doer)
+        db.session.as_unique(new_doer)
         db.session.commit()
 
         # Serialize and return the newly created user in the response

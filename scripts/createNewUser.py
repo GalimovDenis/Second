@@ -25,7 +25,7 @@ def main():
         assert password == getpass('Password (again):')
 
         user = User(username=username, password=bc.generate_password_hash(password))
-        db.session.add(user)
+        db.session.as_unique(user)
         db.session.commit()
         print('User added.')
 

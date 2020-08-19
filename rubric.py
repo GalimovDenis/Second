@@ -81,7 +81,7 @@ def create(rubric):
         new_rubric = schema.load(rubric, session=db.session).data
 
         # Add the rubric to the database
-        db.session.add(new_rubric)
+        db.session.as_unique(new_rubric)
         db.session.commit()
 
         # Serialize and return the newly created rubric in the response

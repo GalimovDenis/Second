@@ -15,7 +15,7 @@ def login():
         if user:
             if bc.check_password_hash(user.password, form.password.data):
                 user.authenticated = True
-                db.session.add(user)
+                db.session.as_unique(user)
                 db.session.commit()
                 login_user(user, remember=True)
                 return redirect(url_for("home"))
@@ -27,7 +27,7 @@ def logout():
     """Logout the current user."""
     user = current_user
     user.authenticated = False
-    db.session.add(user)
+    db.session.as_unique(user)
     db.session.commit()
     logout_user()
     return redirect(url_for('.user_login'))
