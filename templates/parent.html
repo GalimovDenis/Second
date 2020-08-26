@@ -1,29 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     {% block head %}
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
-    <link rel="stylesheet" href="/static/css/parent.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/parent.css', v=1)}}">
     {% endblock %}
 </head>
 <body>
 <div class="container">
-    {% block rubrics %}
-    {% endblock %}
+
 </div>
-<!--<div class="navigation">
-    <span class="buttons">
-        <a href="/">Home</a>
-        <a href="/user">People</a>
-    </span>
-    <span class="page_name">
-        <div>{% block page_name%}{% endblock %}</div>
-    </span>
-    <span class="spacer"></span>
-</div>
--->
+
 {% block body %}
 {% endblock %}
 

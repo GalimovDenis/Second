@@ -1,9 +1,11 @@
 from flask import make_response, abort
+from flask_login import login_required
 
 from config import db
-from tolkuchka.models import Doer, DoerSchema, Ad
+from models import Doer, DoerAdSchema, Ad
 
 
+@login_required
 def read_all():
     """
     This function responds to a request for /api/doers
@@ -15,17 +17,18 @@ def read_all():
     doers = Doer.query.order_by(Doer.doer_phone).all()
 
     # Serialize the data  for the response
-    doer_schema = DoerSchema(many=True)
+    doer_schema = DoerAdSchema(many=True)
     data = doer_schema.dump(doers)
     return data
 
 
+@login_required
 def read_one(doer_id):
     """
     This function responds to a request for /api/users/{user_id}
-    with one matching doer from users
+    with one matching ad_doers from users
 
-    :param doer_id: Id of doer to find
+    :param doer_id: Id of ad_doers to find
     :return:        User matching id
     """
 
@@ -36,19 +39,20 @@ def read_one(doer_id):
         .one_or_none()
     )
 
-    # Did we find a doer?
+    # Did we find a ad_doers?
     if doer is not None:
 
         # Serialize the data for the response
-        doer_schema = DoerSchema()
+        doer_schema = DoerAdSchema()
         data = doer_schema.dump(doer)
         return data
 
-    # otherwise, nope, didn't find that doer
+    # otherwise, nope, didn't find that ad_doers
     else:
         abort(404, f"User not found for Id: {doer_id}")
 
 
+@login_required
 def create(doer):
     """
     This function creates a new user in the users structure
@@ -68,11 +72,11 @@ def create(doer):
     if existing_doer is None:
 
         # Create a person instance using the schema and thee passed in user
-        schema = DoerSchema()
+        schema = DoerAdSchema()
         new_doer = schema.load(doer, session=db.session).data
 
         # Add the user to the database
-        db.session.add(new_doer)
+        db.session.as_unique(new_doer)
         db.session.commit()
 
         # Serialize and return the newly created user in the response
@@ -85,6 +89,7 @@ def create(doer):
         abort(409, f"Doer {doer_phone} exists already")
 
 
+@login_required
 def update(doer_id, doer):
     """
     This function updates an existing user in the users structure
@@ -101,7 +106,7 @@ def update(doer_id, doer):
     if update_doer is not None:
 
         # turn the passed in user into a db object
-        schema = DoerSchema()
+        schema = DoerAdSchema()
         update = schema.load(doer, session=db.session).data
 
         # Set the id to the person we want to update
@@ -121,23 +126,24 @@ def update(doer_id, doer):
         abort(404, f"Doer not found for Id: {doer_id}")
 
 
+@login_required
 def delete(doer_id):
     """
-    This function deletes the doer from the users structure
+    This function deletes the ad_doers from the users structure
 
-    :param doer_id:     Id of the doer to delete
+    :param doer_id:     Id of the ad_doers to delete
     :return:            200 on successful delete, 404 if not found
     """
 
     # Get the person request
     doer = Doer.query.filter(Doer.doer_id == doer_id).one_or_none()
 
-    # Did we find the doer?
+    # Did we find the ad_doers?
     if doer is not None:
-        db.session.delete(doer)
+        db.session.delete()
         db.session.commit()
         return make_response(f"Doer {doer_id} deleted", 200)
 
-    # Otherwise, nope, didn't find that doer
+    # Otherwise, nope, didn't find that ad_doers
     else:
         abort(404, f"Doer not found for Id: {doer_id}")

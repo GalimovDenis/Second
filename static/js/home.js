@@ -30,7 +30,7 @@ class Model {
  */
 class View {
     constructor() {
-        this.table = document.querySelector(".ads table");
+        this.table = document.querySelector(".ad_doers table");
         this.error = document.querySelector(".error");
     }
 
@@ -38,13 +38,15 @@ class View {
         let tbody = this.table.createTBody();
         let html = "";
 
-        // Iterate over the ads and build the table
+        // Iterate over the ad_doers and build the table
         ads.forEach((ad) => {
             html += `
             <tr data-person_id="${ad.doer.doer_id}" data-note_id="${ad.ad_id}">
-                <td class="timestamp">${ad.ad_date}</td>
+                <td class="timestamp">${ad.ad_timestamp}</td>
                 <td class="name">${ad.doer.doer_phone}</td>
                 <td class="content">${ad.ad_text}</td>
+                <td class="operator">${ad.ad_issuer}</td>
+                <td class="frame">${ad.ad_frame}</td>
             </tr>`;
         });
         // Replace the tbody with our new content
@@ -90,14 +92,13 @@ class Controller {
             if (target.classList.contains("name")) {
                 let person_id = parent.getAttribute("data-person_id");
 
-                window.location = `/doer/${(this.doer_id)}`;
+                window.location = `/doer/${person_id}`;
 
             // is this the content td
             } else if (target.classList.contains("content")) {
-                let person_id = parent.getAttribute("data-person_id"),
-                    note_id = parent.getAttribute("data-note_id");
+                let note_id = parent.getAttribute("data-note_id");
 
-                window.location = `user/${person_id}/ads/${note_id}`;
+                window.location = `/ad/${note_id}`;
             }
         });
     }

@@ -1,0 +1,17 @@
+
+.login {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: calc(50% - 66px);
+    width: 250px;
+    height: 172px;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+}
+
+.navigation {
+    visibility: hidden;
+}

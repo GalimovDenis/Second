@@ -1,0 +1,16 @@
+{% extends "parent.html" %}
+{% block title %}Толкучка - прием объявлений{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='css/login.css', v=1)}}">
+{% endblock %}
+{% block body %}
+<div class="container">
+    <form method="POST" class="login" action="/login">
+        {{ form.csrf_token }}
+        {{ form.username.label }} {{ form.username(size=20) }}
+        {{ form.password.label }} {{ form.password(size=20) }}
+        <input type="submit" value="Вход">
+    </form>
+</div>
+{% endblock %}

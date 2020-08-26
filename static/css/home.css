@@ -7,12 +7,21 @@ div.blog {
     border: 2px solid darkgrey;
 }
 
-td.name {
+td {
     text-align: center;
-    width: 175px;
+}
+td.name {
+    width: 50px;
 }
 
 td.timestamp {
-    text-align: center;
-    width: 280px;
+    width: 50px;
+}
+
+td.operator {
+    width: 50px;
+}
+
+td.frame {
+    width: 30px;
 }
