@@ -9,7 +9,7 @@ paths:
 
   /doers:
     get:
-      operationId: ad_doers.read_all
+      operationId: doer.read_all
       tags:
         - Doer
       summary: Read the entire set of doers, sorted by doer_phone
@@ -38,7 +38,7 @@ paths:
 
   '/doer/{doer_id}':
     get:
-      operationId: ad_doers.read_one
+      operationId: doer.read_one
       tags:
         - Doer
       summary: Show all ad_doers's ad_doers
@@ -55,7 +55,7 @@ paths:
         '404':
           description: Doer does not exist
     put:
-      operationId: ad_doers.create
+      operationId: doer.create
       tags:
         - Doer
       summary: Create or update the ad_doers and store his to the db
@@ -81,7 +81,7 @@ paths:
 
   /ads:
     get:
-      operationId: ad_doers.read_all
+      operationId: ads.read_all
       tags:
         - Ad
       summary: Read the entire set of ad_doers for all doers, sorted by date
@@ -108,7 +108,7 @@ paths:
 
   /ad/{ad_id}:
     get:
-      operationId: ad_doers.read_one
+      operationId: ads.read_one
       tags:
         - Ad
       summary: Read the ad
@@ -125,7 +125,7 @@ paths:
           description: The ad not found
 
     put:
-      operationId: ad_doers.create
+      operationId: ads.create
       tags:
         - Ad
       summary: Create the ad and store his in the db
@@ -153,8 +153,8 @@ paths:
       operationId: rubric.read_all
       tags:
         - Rubric
-      summary: Read the entire set of rubric, sorted by rubric_parent
-      description: Read the entire set of rubric, sorted by rubric_parent
+      summary: Read the entire set of rubric, sorted by rubric_children
+      description: Read the entire set of rubric, sorted by rubric_children
       responses:
         '200':
           description: Successfully read rubric set operation

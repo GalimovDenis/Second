@@ -4,7 +4,7 @@ from flask import make_response, abort
 from flask_login import login_required
 
 from config import db, DAYS_SHOW_AD
-from models import Ad, AdSchema, Doer, Rubric
+from models import Ad, AdSchema, Rubric
 
 
 @login_required
@@ -33,11 +33,7 @@ def read_one(ad_id):
     :param ad_id:       Id of the ad
     :return:            json string of ad contents
     """
-    ad = (
-        Ad.query.join(Doer, Doer.doer_id == Ad.ad_doers)
-        .filter(Ad.ad_id == ad_id)
-        .one_or_none()
-    )
+    ad = Ad.query.filter(Ad.ad_id == ad_id).one_or_none()
 
     if ad is not None:
         ad_schema = AdSchema()
@@ -80,22 +76,16 @@ def create(rubric_id, ad: Ad):
 
 
 @login_required
-def update(doer_id, rubric_id, ad_id, ad: Ad):
+def update(rubric_id, ad_id, ad: Ad):
     """
     This function updates an existing ad related to the passed in user id and rubric id
 
-    :param doer_id:     Id of the user the ad is related to
     :param rubric_id:   Id of the rubric the ad is related to
     :param ad_id:       Id of the ad to update
     :param ad:          The JSON containing the ad data
     :return:            200 on success
     """
-    update_ad = (
-        Ad.query.filter(Doer.doer_id == doer_id)
-        .filter(Rubric.rubric_id == rubric_id)
-        .filter(Ad.ad_id == ad_id)
-        .one_or_none()
-    )
+    update_ad = Ad.query.filter(Rubric.rubric_id == rubric_id).filter(Ad.ad_id == ad_id).one_or_none()
 
     # Did we find an existing ad?
     if update_ad is not None:

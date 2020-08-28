@@ -2,7 +2,7 @@ from flask import make_response, abort
 from flask_login import login_required
 
 from config import db
-from models import Doer, DoerAdSchema, Ad
+from models import Doer, Ad, DoerSchema
 
 
 @login_required
@@ -17,7 +17,7 @@ def read_all():
     doers = Doer.query.order_by(Doer.doer_phone).all()
 
     # Serialize the data  for the response
-    doer_schema = DoerAdSchema(many=True)
+    doer_schema = DoerSchema(many=True)
     data = doer_schema.dump(doers)
     return data
 
@@ -43,7 +43,7 @@ def read_one(doer_id):
     if doer is not None:
 
         # Serialize the data for the response
-        doer_schema = DoerAdSchema()
+        doer_schema = DoerSchema()
         data = doer_schema.dump(doer)
         return data
 
@@ -72,7 +72,7 @@ def create(doer):
     if existing_doer is None:
 
         # Create a person instance using the schema and thee passed in user
-        schema = DoerAdSchema()
+        schema = DoerSchema()
         new_doer = schema.load(doer, session=db.session).data
 
         # Add the user to the database
@@ -106,7 +106,7 @@ def update(doer_id, doer):
     if update_doer is not None:
 
         # turn the passed in user into a db object
-        schema = DoerAdSchema()
+        schema = DoerSchema()
         update = schema.load(doer, session=db.session).data
 
         # Set the id to the person we want to update

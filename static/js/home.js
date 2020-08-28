@@ -30,7 +30,7 @@ class Model {
  */
 class View {
     constructor() {
-        this.table = document.querySelector(".ad_doers table");
+        this.table = document.querySelector(".ads table");
         this.error = document.querySelector(".error");
     }
 
@@ -40,10 +40,15 @@ class View {
 
         // Iterate over the ad_doers and build the table
         ads.forEach((ad) => {
+            let phones = "";
+            ad.ad_doers.forEach((phone) => {
+                phones += `<p class="doer_phone">${phone.doer_phone}</p><p class="doer_name">${phone.doer_name}</p>
+                `;
+            });
             html += `
-            <tr data-person_id="${ad.doer.doer_id}" data-note_id="${ad.ad_id}">
+            <tr data-person_id="${ad.ad_doers[0].doer_phone}" data-note_id="${ad.ad_id}">
                 <td class="timestamp">${ad.ad_timestamp}</td>
-                <td class="name">${ad.doer.doer_phone}</td>
+                <td class="name">${phones}</td>
                 <td class="content">${ad.ad_text}</td>
                 <td class="operator">${ad.ad_issuer}</td>
                 <td class="frame">${ad.ad_frame}</td>

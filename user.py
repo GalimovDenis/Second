@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for
+from flask import redirect, url_for
 from flask_login import login_required, logout_user, login_user, current_user
 
 from config import db, bc
@@ -15,11 +15,11 @@ def login():
         if user:
             if bc.check_password_hash(user.password, form.password.data):
                 user.authenticated = True
-                db.session.as_unique(user)
+                db.session.merge(user)
                 db.session.commit()
                 login_user(user, remember=True)
                 return redirect(url_for("home"))
-    return render_template("login.html", form=form)
+    return redirect(url_for('.user_login'))
 
 
 @login_required
@@ -27,7 +27,7 @@ def logout():
     """Logout the current user."""
     user = current_user
     user.authenticated = False
-    db.session.as_unique(user)
+    db.session.merge(user)
     db.session.commit()
     logout_user()
     return redirect(url_for('.user_login'))

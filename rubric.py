@@ -64,14 +64,13 @@ def create(rubric):
     :param rubric:  rubric to create in rubrics structure
     :return:        201 on success, 406 on rubric exists
     """
-    rubric_parent = rubric.get("rubric_parent")
+    rubric_children = rubric.get("rubric_children")
     rubric_name = rubric.get("rubric_name")
 
-    existing_rubric = (
-        Rubric.query.filter(Rubric.rubric_parent == rubric_parent)
-            .filter(Rubric.rubric_name == rubric_name)
-            .one_or_none()
-    )
+    existing_rubric = Rubric.query.filter(Rubric.rubric_children == rubric_children)\
+        .filter(Rubric.rubric_name == rubric_name)\
+        .one_or_none()
+
 
     # Can we insert the rubric?
     if existing_rubric is None:
@@ -91,7 +90,7 @@ def create(rubric):
 
     # Otherwise, nope, rubric exists already
     else:
-        abort(409, f"Rubric {rubric_name} in {rubric_parent} exists already")
+        abort(409, f"Rubric {rubric_name} in {rubric_children} exists already")
 
 
 @login_required
